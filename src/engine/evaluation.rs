@@ -1,46 +1,53 @@
 use chess::{Board, Piece, Color, BitBoard};
 
 pub fn evaluate_board(board: &Board) -> i32 {
-    let mut score = 0;
+    let mut mg_score = 0;
+    let mut eg_score = 0;
 
-    // Basic Point Counting with centipawns so that small positional differences can be added
-    let pawn_val = 100;
-    let knight_val = 300;
-    let bishop_val = 320;
-    let rook_val = 500;
-    let queen_val = 900;
+    mg_score += calculate_values(board, Piece::Pawn, Color::White, true) as i32;
+    mg_score += calculate_values(board, Piece::Knight, Color::White, true) as i32;
+    mg_score += calculate_values(board, Piece::Bishop, Color::White, true) as i32;
+    mg_score += calculate_values(board, Piece::Rook, Color::White, true) as i32;
+    mg_score += calculate_values(board, Piece::Queen, Color::White, true) as i32;
+    mg_score += calculate_values(board, Piece::King, Color::White, true) as i32;
 
-    // Simple Point Material Counting
-    score += (count_pieces(board, Piece::Pawn, Color::White) as i32) * pawn_val;
-    score -= (count_pieces(board, Piece::Pawn, Color::Black) as i32) * pawn_val;
+    mg_score -= calculate_values(board, Piece::Pawn, Color::Black, true) as i32;
+    mg_score -= calculate_values(board, Piece::Knight, Color::Black, true) as i32;
+    mg_score -= calculate_values(board, Piece::Bishop, Color::Black, true) as i32;
+    mg_score -= calculate_values(board, Piece::Rook, Color::Black, true) as i32;
+    mg_score -= calculate_values(board, Piece::Queen, Color::Black, true) as i32;
+    mg_score -= calculate_values(board, Piece::King, Color::Black, true) as i32;
 
-    score += (count_pieces(board, Piece::Knight, Color::White) as i32) * knight_val;
-    score -= (count_pieces(board, Piece::Knight, Color::Black) as i32) * knight_val;
+    eg_score += calculate_values(board, Piece::Pawn, Color::White, true) as i32;
+    eg_score += calculate_values(board, Piece::Knight, Color::White, true) as i32;
+    eg_score += calculate_values(board, Piece::Bishop, Color::White, true) as i32;
+    eg_score += calculate_values(board, Piece::Rook, Color::White, true) as i32;
+    eg_score += calculate_values(board, Piece::Queen, Color::White, true) as i32;
+    eg_score += calculate_values(board, Piece::King, Color::White, true) as i32;
 
-    score += (count_pieces(board, Piece::Bishop, Color::White) as i32) * bishop_val;
-    score -= (count_pieces(board, Piece::Bishop, Color::Black) as i32) * bishop_val;
+    eg_score -= calculate_values(board, Piece::Pawn, Color::Black, true) as i32;
+    eg_score -= calculate_values(board, Piece::Knight, Color::Black, true) as i32;
+    eg_score -= calculate_values(board, Piece::Bishop, Color::Black, true) as i32;
+    eg_score -= calculate_values(board, Piece::Rook, Color::Black, true) as i32;
+    eg_score -= calculate_values(board, Piece::Queen, Color::Black, true) as i32;
+    eg_score -= calculate_values(board, Piece::King, Color::Black, true) as i32;
 
-    score += (count_pieces(board, Piece::Rook, Color::White) as i32) * rook_val;
-    score -= (count_pieces(board, Piece::Rook, Color::Black) as i32) * rook_val;
+    let mut current_phase = 0;
+    let bitboard = board.pieces(Piece::Knight) & board.combined();
+    current_phase += bitboard.popcnt();
+    let bitboard = board.pieces(Piece::Bishop) & board.combined();
+    current_phase += bitboard.popcnt();
+    let bitboard = board.pieces(Piece::Rook) & board.combined();
+    current_phase += 2 * bitboard.popcnt();
+    let bitboard = board.pieces(Piece::Queen) & board.combined();
+    current_phase += 4 * bitboard.popcnt();
+    let current_phase = current_phase as i32;
 
-    score += (count_pieces(board, Piece::Queen, Color::White) as i32) * queen_val;
-    score -= (count_pieces(board, Piece::Queen, Color::Black) as i32) * queen_val;
+    // Linearly interpolates based on game phase rating assigned based on # of pieces of each kind
+    ((mg_score * current_phase) + (eg_score * (24 - current_phase)))/24
+}
 
+fn calculate_values(board : &Board, piece : Piece, color : Color, mg_flag: bool) -> u32 {
+    0
     
-    if board.side_to_move() == Color::White {
-        score
-    } else {
-        -score
-    }
-}
-
-fn count_pieces(board : &Board, piece : Piece, color : Color) -> u32 {
-    // Piece must be of right type and color to be counted
-    let bitboard = board.pieces(piece) & board.color_combined(color);
-
-    bitboard.popcnt()
-}
-
-fn flip_index(index: usize) -> usize {
-    index ^ 56
 }
