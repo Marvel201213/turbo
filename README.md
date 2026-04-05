@@ -1,1 +1,2 @@
-# To-Do
+# in-progress
+Currently, I have the evaluation set up, using the PeSTO Piece Square Tables from Ronald Friederich and chess crate based BitBoard bit operations to estimate the advantage of the current side in the FEN string using tapered evaluation.

@@ -44,10 +44,12 @@ fn run(config: Args) -> Result<Move, GenericError> {
     }
     println!("We shall analyze the position at depth {}.", config.depth);
 
-    // Put actual move generation here
-    let res = engine::evaluation::evaluate_board(&board);
+    // This is the usage of the evaluation of the current position provided by the fixed evaluation algorithm: 
+    // in practice, this will be used at each node of the tree during the search to ascertain the best move outcome
+    let res = engine::evaluation::evaluate_board(&board, &eval_parameters);
     println!("{}", res);
 
+    // This is filler-move generation before alpha-beta pruning-based search is implemented
     let best_move = ChessMove::new(Square::E2, Square::E4, None);
     Ok(Move {
         status, 
