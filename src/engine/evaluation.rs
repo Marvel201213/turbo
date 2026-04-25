@@ -1,5 +1,5 @@
-use chess::{Board, Piece, Color};
 use crate::engine::config;
+use chess::{Board, Color, Piece};
 
 pub fn evaluate_board(board: &Board, eval_config: &config::EvalConfig) -> i32 {
     let mut mg_score = 0;
@@ -45,7 +45,7 @@ pub fn evaluate_board(board: &Board, eval_config: &config::EvalConfig) -> i32 {
     let current_phase = current_phase as i32;
 
     // Linearly interpolates based on game phase rating assigned based on # of pieces of each kind
-    let score = ((mg_score * current_phase) + (eg_score * (24 - current_phase)))/24;
+    let score = ((mg_score * current_phase) + (eg_score * (24 - current_phase))) / 24;
     if board.side_to_move() == Color::Black {
         -score
     } else {
@@ -53,7 +53,13 @@ pub fn evaluate_board(board: &Board, eval_config: &config::EvalConfig) -> i32 {
     }
 }
 
-fn calculate_values(board : &Board, piece : Piece, color : Color, mg_flag: bool, eval_config: &config::EvalConfig) -> i32 {
+fn calculate_values(
+    board: &Board,
+    piece: Piece,
+    color: Color,
+    mg_flag: bool,
+    eval_config: &config::EvalConfig,
+) -> i32 {
     // Selects for all pieces of the appropriate color and type
     let pst_values = eval_config.get_array(piece, mg_flag);
     let bit_board = board.pieces(piece) & board.color_combined(color);
@@ -62,9 +68,9 @@ fn calculate_values(board : &Board, piece : Piece, color : Color, mg_flag: bool,
         let mut index = i.to_index();
         if color == Color::Black {
             index ^= 56;
-        } 
+        }
         values += pst_values[index];
     }
-    values+= eval_config.get_value(piece) * (bit_board.popcnt() as i32);
+    values += eval_config.get_value(piece) * (bit_board.popcnt() as i32);
     values
 }
