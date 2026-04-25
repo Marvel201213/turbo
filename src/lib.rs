@@ -3,13 +3,37 @@ use chess::{BoardStatus, ChessMove};
 pub use engine::config::EvalConfig;
 pub use engine::search::Searcher;
 
+/// Represents the output of a chess move search. 
+/// 
+/// Fields are the final status of the board, the chosen move,
+/// the evaluation score, and the total nodes searched
 pub struct SearchOutput {
     pub status: BoardStatus,
     pub chess_move: Option<ChessMove>,
     pub score: i32,
     pub nodes: u64,
 }
+impl SearchOutput {
+    /// Constructs a new SearchOutput Struct utilizing the required fields
+    pub fn new(
+        status: BoardStatus,
+        chess_move: Option<ChessMove>,
+        score: i32,
+        nodes: u64,
+    ) -> Self {
+        Self {
+            status,
+            chess_move,
+            score,
+            nodes,
+        }
+    }
+}
 
+/// Manually implements the Display trait for SearchOutput.
+/// 
+/// This display is human-readable, and summarizes the search process,
+/// as well as handling for mating sequences for increased user-friendliness
 impl std::fmt::Display for SearchOutput {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let m_str = self

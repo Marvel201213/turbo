@@ -1,19 +1,26 @@
+//! Move searching using Negamax (simplification of minimax applicable to chess) with Alpha-Beta pruning for optimization.
+
 use super::evaluation::evaluate_board;
 use crate::engine::config::EvalConfig;
 use chess::{Board, ChessMove, MoveGen};
 
 const MATE_VALUE: u32 = 20000;
 const EXTREME: u32 = 500000;
+/// Primary Search engine structure, utilizing lifetimes for zero-copy config setup
 pub struct Searcher<'a> {
     config: &'a EvalConfig,
+    /// Total number of nodes (positions) searched
     nodes: u64,
 }
 
 impl<'a> Searcher<'a> {
+    /// Initializes Searcher Struct.
     pub fn new(config: &'a EvalConfig) -> Self {
         Searcher { config, nodes: 0 }
     }
-
+    /// Performs an Alpha-Beta search to find the best move for the current side.
+    /// 
+    /// Returns a tuple with an option for the best move, as well as its evaluation score in centipawns.
     pub fn find_best_move(&mut self, board: &mut Board, depth: usize) -> (Option<ChessMove>, i32) {
         let mut best_move = None;
         // Alpha serves as the maximizing score found so far for the current player to move, not int min because int overflow possibilities
@@ -36,11 +43,13 @@ impl<'a> Searcher<'a> {
         }
         (best_move, alpha)
     }
-
+    /// Retrieves nodes.
     pub fn get_nodes(&self) -> u64 {
         self.nodes
     }
 
+    /// Recursive helper function to conduct negamax on depth, 
+    /// traversing move possibilities and pruning branches while maximizing score.
     fn negamax(&mut self, board: &mut Board, depth: usize, mut alpha: i32, beta: i32) -> i32 {
         self.nodes += 1;
         if depth == 0 {
@@ -66,7 +75,8 @@ impl<'a> Searcher<'a> {
             alpha
         }
     }
-
+    /// Orders moves by evaluation to maximize potency of alpha-beta pruning
+    /// by placing better moves via the MVV-LVA heuristic.
     fn order_moves(&mut self, board: &mut Board, noisy_flag: bool) -> Vec<ChessMove> {
         let movegen: Vec<ChessMove> = if noisy_flag {
             MoveGen::new_legal(board)
@@ -87,6 +97,8 @@ impl<'a> Searcher<'a> {
         score_moves.into_iter().map(|(m, _)| m).collect()
     }
 
+    /// Implements the Most Valuable Victim- Least Valuable Attacker (MVV-LVA) heuristic in addition
+    /// to promotion checking to be used by the move ordering.
     fn score_move(&self, mv: &ChessMove, board: &Board) -> i32 {
         let mut score = 0;
         let attacker = board.piece_on(mv.get_source()).unwrap();
@@ -101,6 +113,7 @@ impl<'a> Searcher<'a> {
         score
     }
 
+    /// Runs quiescence search to ensure selected sequence does not stop in the middle of a noisy continuation that misleads scoring.
     // Won't recurse infinitely as number of pieces on board or other opportunites for noisy moves decrease with each noisy move, validating a termination argument
     fn capture_checker(&mut self, board: &mut Board, mut alpha: i32, beta: i32) -> i32 {
         self.nodes += 1;

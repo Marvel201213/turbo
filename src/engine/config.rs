@@ -1,9 +1,15 @@
+//! Logic for engine configuration based on Piece-Square Tables.
+//! 
+//! This module handles deserialization of JSON configuration files
+//! and provides the tapered evaluation values for different game stages utilized in evaluation.
+
 use anyhow::Context;
 use chess::Piece;
 use serde::{Deserialize, Serialize};
 use serde_big_array::BigArray;
 use std::fs;
 
+/// Stores the weights and values for piece evaluation.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvalConfig {
     #[serde(with = "BigArray")]
@@ -34,6 +40,7 @@ pub struct EvalConfig {
 }
 
 impl EvalConfig {
+    /// Loads the configuration from a JSON file using serde, with anyhow error handling.
     pub fn load() -> anyhow::Result<Self> {
         let path = "data/evaluation.json";
         let data = fs::read_to_string(path)
@@ -42,7 +49,7 @@ impl EvalConfig {
         Ok(config)
     }
 
-    // Function to streamline retrieval of specific struct entries
+    /// Function to streamline retrieval of specific struct entries for piece value configurations.
     pub fn get_array(&self, piece: Piece, mg_flag: bool) -> &[i32; 64] {
         match piece {
             Piece::Pawn => {
@@ -89,7 +96,7 @@ impl EvalConfig {
             }
         }
     }
-
+    /// Returns material base values.
     pub fn get_value(&self, piece: Piece) -> i32 {
         match piece {
             Piece::Pawn => self.piece_base_values[0],

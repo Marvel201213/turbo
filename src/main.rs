@@ -34,12 +34,7 @@ fn run(config: Args) -> Result<SearchOutput, GenericError> {
     let status = board.status();
     if status != BoardStatus::Ongoing {
         println!("Game has already concluded: {:?}", status);
-        return Ok(SearchOutput {
-            status,
-            chess_move: None,
-            score: 0,
-            nodes: 0,
-        });
+        return Ok(SearchOutput::new(board.status(), None, 0, 0));
     }
     let search_depth = if config.depth <= 0 {
         1
@@ -57,12 +52,7 @@ fn run(config: Args) -> Result<SearchOutput, GenericError> {
     let (best_move, score) = searcher.find_best_move(&mut board, search_depth);
     let duration = start.elapsed();
     println!("Search Completed in {:?}", duration);
-    let result = SearchOutput {
-        status: board.status(),
-        chess_move: best_move,
-        score,
-        nodes: searcher.get_nodes(),
-    };
+    let result = SearchOutput::new(board.status(), best_move, score, searcher.get_nodes());
     // Implementation of Display Trait for SearchOutput cleans up command line output
     println!("{}", result);
     Ok(result)
