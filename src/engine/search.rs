@@ -18,7 +18,7 @@ impl<'a> Searcher<'a> {
 
     fn negamax(&mut self, board: &mut Board, depth: usize, mut alpha: i32, beta: i32) -> i32 {
         if depth == 0 {
-            self.capture_checker(board, alpha, beta);
+            return self.capture_checker(board, alpha, beta);
         }
         let movegen = self.order_moves(board);
         if movegen.is_empty() && board.checkers().popcnt() > 0 {
@@ -26,7 +26,18 @@ impl<'a> Searcher<'a> {
         } else if movegen.is_empty() {
             0
         } else {
-            1 // Filler
+            for m in movegen {
+                let mut next_board = Board::default();
+                board.make_move(m, &mut next_board);
+                let score = -self.negamax(&mut next_board, depth - 1, -beta, -alpha);
+                if score >= beta {
+                    return beta;
+                }
+                if score > alpha {
+                    alpha = score;
+                }
+            }
+            alpha
         }
     }
 
