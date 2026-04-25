@@ -1,5 +1,5 @@
 //! Logic for engine configuration based on Piece-Square Tables.
-//! 
+//!
 //! This module handles deserialization of JSON configuration files
 //! and provides the tapered evaluation values for different game stages utilized in evaluation.
 

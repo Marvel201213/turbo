@@ -1,12 +1,12 @@
 //! Static board evaluation using tapered evaluation linear interpolation.
-//! 
+//!
 //! Mid-game and end-game piece-square tables from a configuration are utilized for tapered evaluation.
 
 use crate::engine::config;
 use chess::{Board, Color, Piece};
 
 /// Evaluates board state and returns a score in centipawns (1/100th of a pawn).
-/// 
+///
 /// Positive values indicate White advantage, while negative values indicate Black advantage.
 /// Utilizing tapered evaluation, material, positional value, and game phase are accounted for.
 pub fn evaluate_board(board: &Board, eval_config: &config::EvalConfig) -> i32 {

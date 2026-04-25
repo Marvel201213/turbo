@@ -19,7 +19,7 @@ impl<'a> Searcher<'a> {
         Searcher { config, nodes: 0 }
     }
     /// Performs an Alpha-Beta search to find the best move for the current side.
-    /// 
+    ///
     /// Returns a tuple with an option for the best move, as well as its evaluation score in centipawns.
     pub fn find_best_move(&mut self, board: &mut Board, depth: usize) -> (Option<ChessMove>, i32) {
         let mut best_move = None;
@@ -48,7 +48,7 @@ impl<'a> Searcher<'a> {
         self.nodes
     }
 
-    /// Recursive helper function to conduct negamax on depth, 
+    /// Recursive helper function to conduct negamax on depth,
     /// traversing move possibilities and pruning branches while maximizing score.
     fn negamax(&mut self, board: &mut Board, depth: usize, mut alpha: i32, beta: i32) -> i32 {
         self.nodes += 1;
@@ -137,5 +137,28 @@ impl<'a> Searcher<'a> {
             }
         }
         alpha
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::engine::config::EvalConfig;
+    use std::str::FromStr;
+
+    #[test]
+    fn test_engine_search_depth() {
+        // Verifies move generation, evaluation, ordering, and alpha-beta negamax search
+
+        type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
+        let mut board = chess::Board::default();
+        let config = EvalConfig::load()
+            .map_err(|e| -> GenericError { e.into() })
+            .unwrap();
+        let mut searcher = Searcher::new(&config);
+
+        let (best_move, score) = searcher.find_best_move(&mut board, 2);
+        assert!(best_move.is_some());
+        assert!(searcher.nodes > 0);
     }
 }

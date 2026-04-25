@@ -3,8 +3,8 @@ use chess::{BoardStatus, ChessMove};
 pub use engine::config::EvalConfig;
 pub use engine::search::Searcher;
 
-/// Represents the output of a chess move search. 
-/// 
+/// Represents the output of a chess move search.
+///
 /// Fields are the final status of the board, the chosen move,
 /// the evaluation score, and the total nodes searched
 pub struct SearchOutput {
@@ -15,12 +15,7 @@ pub struct SearchOutput {
 }
 impl SearchOutput {
     /// Constructs a new SearchOutput Struct utilizing the required fields
-    pub fn new(
-        status: BoardStatus,
-        chess_move: Option<ChessMove>,
-        score: i32,
-        nodes: u64,
-    ) -> Self {
+    pub fn new(status: BoardStatus, chess_move: Option<ChessMove>, score: i32, nodes: u64) -> Self {
         Self {
             status,
             chess_move,
@@ -31,7 +26,7 @@ impl SearchOutput {
 }
 
 /// Manually implements the Display trait for SearchOutput.
-/// 
+///
 /// This display is human-readable, and summarizes the search process,
 /// as well as handling for mating sequences for increased user-friendliness
 impl std::fmt::Display for SearchOutput {
@@ -53,5 +48,22 @@ impl std::fmt::Display for SearchOutput {
                 m_str, eval, self.nodes, self.status
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chess::BoardStatus;
+
+    #[test]
+    fn test_search_output_formatting() {
+        // Verifies the Display Trait
+        let output = SearchOutput::new(BoardStatus::Ongoing, None, 125, 100);
+        assert!(output.to_string().contains("1.25"));
+
+        // Tests the Display trait branch for mating scores
+        let mate_out = SearchOutput::new(BoardStatus::Ongoing, None, 20000, 10);
+        assert!(mate_out.to_string().contains("Mating Sequence Found"));
     }
 }
