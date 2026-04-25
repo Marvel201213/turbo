@@ -1,12 +1,12 @@
 use crate::engine::config::{EvalConfig};
-use chess::{ChessMove, Board, MoveGen, Piece};
+use chess::{ChessMove, Board, MoveGen};
 use super::evaluation::evaluate_board;
 
 const MATE_VALUE: u32 = 20000;
 const EXTREME: u32 = 500000;
 pub struct Searcher<'a> {
     config: &'a EvalConfig, 
-    nodes: u64
+    pub nodes: u64
 }
 
 impl<'a> Searcher<'a> {
@@ -20,7 +20,7 @@ impl<'a> Searcher<'a> {
         let mut alpha = -(EXTREME as i32);
         // Beta is the minimizing score so far for the opposition (assuming the opposition plays competently,
         // they will not lead you down a path with a score better for you than beta, allowing pruning)
-        let beta = (EXTREME as i32);
+        let beta = EXTREME as i32;
         if depth == 0 {
             return (None, evaluate_board(board, self.config));
         }

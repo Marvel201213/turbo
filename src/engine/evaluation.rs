@@ -1,4 +1,4 @@
-use chess::{Board, Piece, Color, BitBoard};
+use chess::{Board, Piece, Color};
 use crate::engine::config;
 
 pub fn evaluate_board(board: &Board, eval_config: &config::EvalConfig) -> i32 {
