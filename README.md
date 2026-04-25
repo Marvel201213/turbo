@@ -17,7 +17,10 @@ The line coverage as per llvm-cov is listed here.
 ## How to Use
 ### Running the Engine
 Provide a FEN string and an optional depth (default is 5).
-![alt text](image-2.png)
+
+The sample provided here is an 1837 rated Lichess puzzle, in which at depth 6 the engine provides the optimal move and verifies that we have entered a mating sequence (which involves a queen sacrifice).
+![alt text](image-3.png)
+![alt text](image.png)
 
 ```bash
-cargo run -- --depth 4 "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+cargo run -- --depth 6 "1r5r/1ppk3q/p7/N1nP4/P4p2/1R4N1/1P2QPP1/R5K1 b - - 0 31"
