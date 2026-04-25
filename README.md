@@ -1,6 +1,6 @@
 # Rust Chess Engine
 
-A high-performance chess engine built in Rust, featuring a **Negamax search** with **Alpha-Beta pruning** and a **Tapered Evaluation** system. I have structured this project to utilize the library/binary split effectively, as well as manual trait implementations and external data processing.
+A high-performance chess engine built in Rust, featuring a **Negamax search** with **Alpha-Beta pruning** and a **Tapered Evaluation** system. I have structured this project to utilize the library/binary split effectively, as well as manual trait implementations, external data processing, and command-line integration.
 
 ## Features
 
@@ -8,7 +8,7 @@ A high-performance chess engine built in Rust, featuring a **Negamax search** wi
 - **Quiescence Search**: Extends the search for captures and promotions until a stable board state is reached.
 - **Tapered Evaluation**: Linearly interpolates between Midgame and Endgame scoring based on the remaining material on the board.
 - **Positional Awareness**: Uses **PeSTO Piece-Square Tables** (deserialized via `serde` from JSON) to evaluate piece placement.
-- **Professional CLI**: Powered by `clap`, allowing for easy FEN input and depth control.
+- **User-Friendly CLI**: Powered by `clap`, allowing for easy FEN input and depth control.
 
 ## Testing
 The line coverage as per llvm-cov is listed here.
@@ -18,7 +18,7 @@ The line coverage as per llvm-cov is listed here.
 ### Running the Engine
 Provide a FEN string and an optional depth (default is 5).
 
-The sample provided here is an 1837 rated Lichess puzzle, in which at depth 6 the engine provides the optimal move and verifies that we have entered a mating sequence (which involves a queen sacrifice).
+The sample provided here is an 1901 rated Lichess puzzle, in which at depth 6 the engine provides the optimal move and verifies that we have entered a mating sequence (which involves a queen sacrifice for line completion).
 ![alt text](image-3.png)
 ![alt text](image.png)
 
